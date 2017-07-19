@@ -2,6 +2,7 @@ package com.mistry.mithun.autosilent;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,7 +30,10 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
     EditText friday_from, friday_to;
     EditText saturday_from, saturday_to;
     EditText sunday_from, sunday_to;
-    Button can_del_button;
+    Button can_del_button, activation_button;
+    EditText schedule_name_edittext;
+
+    private DBHelper mydb;
 
     CheckBox monday, tuesday, wednesday, thursday, friday, saturday, sunday;
 
@@ -38,7 +42,13 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_schedule);
 
+        schedule_name_edittext = (EditText)findViewById(R.id.schedule_name);
+        schedule_name_edittext.requestFocus();
+        mydb = new DBHelper(this);
+
         can_del_button = (Button)findViewById(R.id.can_del_button);
+        activation_button = (Button)findViewById(R.id.activation_button);
+        activation_button.setTextColor(Color.GREEN);
 
         monday = (CheckBox)findViewById(R.id.monday);
         tuesday = (CheckBox)findViewById(R.id.tuesday);
@@ -174,6 +184,18 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    public void activation(View v){
+        String activation_button_text = activation_button.getText().toString();
+        if(activation_button_text.equalsIgnoreCase("activated")){
+            activation_button.setText("Deactivated");
+            activation_button.setTextColor(Color.RED);
+        }
+        else{
+            activation_button.setText("Activated");
+            activation_button.setTextColor(Color.GREEN);
+        }
+    }
+
     public boolean check_from_to(String from, String to){
         String pattern = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
         if((from != null && !from.isEmpty()) && (to != null && !to.isEmpty())){
@@ -206,62 +228,92 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         return false;
     }
 
-    public void save(View view){
+    public void save(View view) {
         Boolean time_check;
         Intent intent = new Intent(this, MainActivity.class);
+        String schedule_name = schedule_name_edittext.getText().toString().trim();
 
-        if(monday.isChecked()){
-            time_check = check_from_to(monday_from.getText().toString(), monday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+        if (schedule_name != null && !schedule_name.isEmpty()) {
+
+            Boolean schedule_name_ok = mydb.scheduleNameChecker(schedule_name);
+            if(!schedule_name_ok){
+                Toast.makeText(this, "Schedule name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
+                return;
             }
-        }
-        if(tuesday.isChecked()){
-            time_check = check_from_to(tuesday_from.getText().toString(), tuesday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+
+            if (!monday.isChecked() && !tuesday.isChecked() && !wednesday.isChecked() && !thursday.isChecked()
+                    && !friday.isChecked() && !saturday.isChecked() && !sunday.isChecked()) {
+                Toast.makeText(this, "Please select at least one day to save schedule.", Toast.LENGTH_SHORT).show();
+                return;
             }
-        }
-        if(wednesday.isChecked()){
-            time_check = check_from_to(wednesday_from.getText().toString(), wednesday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+
+            Boolean active = activation_button.getText().toString().equalsIgnoreCase("activated");
+
+            String monday_db = null;
+            String tuesday_db = null;
+            String wednesday_db = null;
+            String thursday_db = null;
+            String friday_db = null;
+            String saturday_db = null;
+            String sunday_db = null;
+
+            if (monday.isChecked()) {
+                time_check = check_from_to(monday_from.getText().toString(), monday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                monday_db = monday_from.getText().toString().trim() + " " + monday_to.getText().toString().trim();
             }
-        }
-        if(thursday.isChecked()){
-            time_check = check_from_to(thursday_from.getText().toString(), thursday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+            if (tuesday.isChecked()) {
+                time_check = check_from_to(tuesday_from.getText().toString(), tuesday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                tuesday_db = tuesday_from.getText().toString().trim() + " " + tuesday_to.getText().toString().trim();
             }
-        }
-        if(friday.isChecked()){
-            time_check = check_from_to(friday_from.getText().toString(), friday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+            if (wednesday.isChecked()) {
+                time_check = check_from_to(wednesday_from.getText().toString(), wednesday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                wednesday_db = wednesday_from.getText().toString().trim() + " " + wednesday_to.getText().toString().trim();
             }
-        }
-        if(saturday.isChecked()){
-            time_check = check_from_to(saturday_from.getText().toString(), saturday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+            if (thursday.isChecked()) {
+                time_check = check_from_to(thursday_from.getText().toString(), thursday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                thursday_db = thursday_from.getText().toString().trim() + " " + thursday_to.getText().toString().trim();
             }
-        }
-        if(sunday.isChecked()){
-            time_check = check_from_to(sunday_from.getText().toString(), sunday_to.getText().toString());
-            if(time_check){
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+            if (friday.isChecked()) {
+                time_check = check_from_to(friday_from.getText().toString(), friday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                friday_db = friday_from.getText().toString().trim() + " " + friday_to.getText().toString().trim();
             }
-        }
-        if(!monday.isChecked() && !tuesday.isChecked() && !wednesday.isChecked() && !thursday.isChecked()
-                && !friday.isChecked() && !saturday.isChecked() && !sunday.isChecked()){
-            Toast.makeText(this, "Please select at least one day to save schedule.", Toast.LENGTH_SHORT).show();
+            if (saturday.isChecked()) {
+                time_check = check_from_to(saturday_from.getText().toString(), saturday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                saturday_db = saturday_from.getText().toString().trim() + " " + saturday_to.getText().toString().trim();
+            }
+            if (sunday.isChecked()) {
+                time_check = check_from_to(sunday_from.getText().toString(), sunday_to.getText().toString());
+                if (!time_check) {
+                    return;
+                }
+                sunday_db = sunday_from.getText().toString().trim() + " " + sunday_to.getText().toString().trim();
+            }
+
+            // All checks passed, insert the data
+            mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
+            Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+
+        } else {
+            Toast.makeText(this, "Please name your schedule.", Toast.LENGTH_SHORT).show();
         }
     }
 
