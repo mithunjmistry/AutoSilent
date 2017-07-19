@@ -16,9 +16,18 @@ import android.support.annotation.RequiresApi;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "mydatabase.db";
-    private static final String CONTACTS_TABLE_NAME = "schedules";
-    private static final String CONTACTS_COLUMN_NAME = "schedule_name";
+    public static final String DATABASE_NAME = "mydatabase.db";
+    public static final String SCHEDULES_TABLE_NAME = "schedules";
+    public static final String SCHEDULES_COLUMN_NAME = "schedule_name";
+    public static final String SCHEDULES_COLUMN_ID = "id";
+    public static final String SCHEDULES_COLUMN_MONDAY = "monday";
+    public static final String SCHEDULES_COLUMN_TUESDAY = "tuesday";
+    public static final String SCHEDULES_COLUMN_WEDNESDAY = "wednesday";
+    public static final String SCHEDULES_COLUMN_THURSDAY = "thursday";
+    public static final String SCHEDULES_COLUMN_FRIDAY = "friday";
+    public static final String SCHEDULES_COLUMN_SATURDAY = "saturday";
+    public static final String SCHEDULES_COLUMN_SUNDAY = "sunday";
+    public static final String SCHEDULES_COLUMN_ACTIVE = "active";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME , null, 1);
@@ -59,7 +68,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public Cursor getIndividualData(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res =  db.rawQuery( "select * from schedules where id="+id+"", null );
-        res.close();
         return res;
     }
 
@@ -72,7 +80,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public int numberOfRows(){
         SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, CONTACTS_TABLE_NAME);
+        int numRows = (int) DatabaseUtils.queryNumEntries(db, SCHEDULES_TABLE_NAME);
         return numRows;
     }
 
@@ -103,11 +111,26 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<String> array_list = new ArrayList<>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from schedules", null );
+        Cursor res =  db.rawQuery( "select schedule_name from schedules order by id desc", null );
         res.moveToFirst();
 
         while(!res.isAfterLast()){
-            array_list.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_NAME)));
+            array_list.add(res.getString(res.getColumnIndex(SCHEDULES_COLUMN_NAME)));
+            res.moveToNext();
+        }
+        res.close();
+        return array_list;
+    }
+
+    public ArrayList<Integer> getAllId() {
+        ArrayList<Integer> array_list = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select id from schedules order by id desc", null );
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            array_list.add(Integer.parseInt(res.getString(res.getColumnIndex(SCHEDULES_COLUMN_ID))));
             res.moveToNext();
         }
         res.close();

@@ -1,14 +1,21 @@
 package com.mistry.mithun.autosilent;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -30,8 +37,10 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
     EditText friday_from, friday_to;
     EditText saturday_from, saturday_to;
     EditText sunday_from, sunday_to;
-    Button can_del_button, activation_button;
+    Button activation_button;
     EditText schedule_name_edittext;
+    Integer id = 0;
+    Boolean mainview = true;
 
     private DBHelper mydb;
 
@@ -42,11 +51,13 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_schedule);
 
+        Intent intent = getIntent();
+        String last_intent = intent.getStringExtra("previousIntent");
+
         schedule_name_edittext = (EditText)findViewById(R.id.schedule_name);
         schedule_name_edittext.requestFocus();
         mydb = new DBHelper(this);
 
-        can_del_button = (Button)findViewById(R.id.can_del_button);
         activation_button = (Button)findViewById(R.id.activation_button);
         activation_button.setTextColor(Color.GREEN);
 
@@ -92,6 +103,86 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         sunday_from.setOnClickListener(this);
         sunday_to = (EditText) findViewById(R.id.sunday_to);
         sunday_to.setOnClickListener(this);
+
+        if(last_intent.equalsIgnoreCase("listview")){
+            mainview = false;
+            id = intent.getIntExtra("identification", 1);
+            Cursor cursor = mydb.getIndividualData(id);
+            cursor.moveToFirst();
+
+            String schedule_name_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_NAME));
+            String monday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_MONDAY));
+            String tuesday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_TUESDAY));
+            String wednesday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_WEDNESDAY));
+            String thursday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_THURSDAY));
+            String friday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_FRIDAY));
+            String saturday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_SATURDAY));
+            String sunday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_SUNDAY));
+            int active_preset = cursor.getInt(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_ACTIVE));
+
+            if (!cursor.isClosed())  {
+                cursor.close();
+            }
+
+            schedule_name_edittext.setText(schedule_name_preset);
+            schedule_name_edittext.setEnabled(false);
+            ImageButton delete_button = (ImageButton)findViewById(R.id.deleteButton);
+            delete_button.setVisibility(View.VISIBLE);
+
+            if(active_preset == 0){
+                activation_button.setText("Deactivated");
+                activation_button.setTextColor(Color.RED);
+            }
+
+            if(monday_preset != null && !monday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                monday.setChecked(true);
+                monday_from.setText(timings[0]);
+                monday_to.setText(timings[1]);
+            }
+
+            if(tuesday_preset != null && !tuesday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                tuesday.setChecked(true);
+                tuesday_from.setText(timings[0]);
+                tuesday_to.setText(timings[1]);
+            }
+
+            if(wednesday_preset != null && !wednesday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                wednesday.setChecked(true);
+                wednesday_from.setText(timings[0]);
+                wednesday_to.setText(timings[1]);
+            }
+
+            if(thursday_preset != null && !thursday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                thursday.setChecked(true);
+                thursday_from.setText(timings[0]);
+                thursday_to.setText(timings[1]);
+            }
+
+            if(friday_preset != null && !friday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                friday.setChecked(true);
+                friday_from.setText(timings[0]);
+                friday_to.setText(timings[1]);
+            }
+
+            if(saturday_preset != null && !saturday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                saturday.setChecked(true);
+                saturday_from.setText(timings[0]);
+                saturday_to.setText(timings[1]);
+            }
+
+            if(sunday_preset != null && !sunday_preset.isEmpty()){
+                String[] timings = monday_preset.split(" ");
+                sunday.setChecked(true);
+                sunday_from.setText(timings[0]);
+                sunday_to.setText(timings[1]);
+            }
+        }
 
     }
 
@@ -176,12 +267,39 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-    public void cancel_delete(View v){
-        String button_text = can_del_button.getText().toString();
-        if(button_text.equalsIgnoreCase("cancel")){
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+    public void cancel(View v){
+        Intent intent = new Intent(this, MainActivity.class);
+        if(!mainview){
+            intent = new Intent(this, ViewScheduleActivity.class);
         }
+        startActivity(intent);
+    }
+
+    public void delete(View view){
+        AlertDialog.Builder alert = new AlertDialog.Builder(
+                SetScheduleActivity.this);
+        alert.setTitle("Confirm Delete");
+        alert.setMessage("Are you sure to delete schedule?");
+        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                mydb.deleteSchedule(id);
+                Intent intent = new Intent(getApplicationContext(), ViewScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
+        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
     }
 
     public void activation(View v){
@@ -194,6 +312,15 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             activation_button.setText("Activated");
             activation_button.setTextColor(Color.GREEN);
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(this, MainActivity.class);
+        if(!mainview){
+            intent = new Intent(this, ViewScheduleActivity.class);
+        }
+        startActivity(intent);
     }
 
     public boolean check_from_to(String from, String to){
@@ -228,6 +355,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         return false;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void save(View view) {
         Boolean time_check;
         Intent intent = new Intent(this, MainActivity.class);
@@ -236,7 +364,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         if (schedule_name != null && !schedule_name.isEmpty()) {
 
             Boolean schedule_name_ok = mydb.scheduleNameChecker(schedule_name);
-            if(!schedule_name_ok){
+            if(!schedule_name_ok && mainview){
                 Toast.makeText(this, "Schedule name already exists. Choose a different name.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -308,9 +436,16 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             }
 
             // All checks passed, insert the data
-            mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
-            Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
-            startActivity(intent);
+            if(mainview) {
+                mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
+                Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
+                startActivity(intent);
+            } else {
+                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
+                Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, ViewScheduleActivity.class);
+                startActivity(intent);
+            }
 
         } else {
             Toast.makeText(this, "Please name your schedule.", Toast.LENGTH_SHORT).show();

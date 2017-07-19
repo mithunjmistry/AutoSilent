@@ -21,7 +21,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:gravity="center"
-            android:text="Welcome to Auto Silent" />
+            android:text="Welcome to Auto Silent"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -31,16 +33,18 @@
                 android:id="@+id/set_schedule"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/view_schedule"
+                android:layout_alignLeft="@+id/view_schedule"
                 android:layout_alignParentTop="true"
+                android:layout_alignRight="@+id/view_schedule"
+                android:layout_alignStart="@+id/view_schedule"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
+                android:background="@android:color/transparent"
                 android:gravity="center"
                 android:onClick="set_schedule"
                 android:text="Set schedule"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_alignLeft="@+id/view_schedule"
-                android:layout_alignStart="@+id/view_schedule"
-                android:layout_alignRight="@+id/view_schedule"
-                android:layout_alignEnd="@+id/view_schedule" />
+                android:textColor="@android:color/holo_blue_dark" />
 
             <Button
                 android:id="@+id/view_schedule"
@@ -49,8 +53,10 @@
                 android:layout_below="@+id/set_schedule"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="5dp"
+                android:background="@android:color/transparent"
                 android:onClick="view_schedule"
-                android:text="View Schedules" />
+                android:text="View Schedules"
+                android:textColor="@android:color/holo_blue_dark" />
         </RelativeLayout>
 
     </LinearLayout>

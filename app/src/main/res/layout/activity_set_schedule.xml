@@ -46,6 +46,19 @@
                 android:hint="Schedule Name"
                 android:inputType="textPersonName"
                 android:maxLength="15" />
+
+            <ImageButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_toLeftOf="@+id/schedule_name"
+                android:layout_toStartOf="@+id/schedule_name"
+                android:onClick="delete"
+                android:visibility="gone"
+                app:srcCompat="@android:drawable/ic_menu_delete" />
         </RelativeLayout>
 
         <LinearLayout
@@ -328,13 +341,13 @@
                 android:textColor="@android:color/holo_blue_dark" />
 
             <Button
-                android:id="@+id/can_del_button"
+                android:id="@+id/cancelButton"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:onClick="cancel_delete"
+                android:onClick="cancel"
                 android:text="Cancel"
                 android:textColor="@android:color/holo_blue_dark" />
         </LinearLayout>

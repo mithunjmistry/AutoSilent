@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void set_schedule(View view){
         Intent intent = new Intent(this, SetScheduleActivity.class);
+        intent.putExtra("previousIntent", "mainview");
         startActivity(intent);
     }
 
