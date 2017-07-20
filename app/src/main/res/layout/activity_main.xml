@@ -57,6 +57,19 @@
                 android:onClick="view_schedule"
                 android:text="View Schedules"
                 android:textColor="@android:color/holo_blue_dark" />
+
+            <Button
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_schedule"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:onClick="test"
+                android:text="Test"
+                android:textColor="@android:color/holo_blue_dark" />
+
         </RelativeLayout>
 
     </LinearLayout>

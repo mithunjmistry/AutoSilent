@@ -28,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void test(View view){
+        Intent intent = new Intent(this, TestActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         if (exit) {

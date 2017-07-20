@@ -1,8 +1,12 @@
 package com.mistry.mithun.autosilent;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -55,7 +59,6 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         String last_intent = intent.getStringExtra("previousIntent");
 
         schedule_name_edittext = (EditText)findViewById(R.id.schedule_name);
-        schedule_name_edittext.requestFocus();
         mydb = new DBHelper(this);
 
         activation_button = (Button)findViewById(R.id.activation_button);
@@ -107,6 +110,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         if(last_intent.equalsIgnoreCase("listview")){
             mainview = false;
             id = intent.getIntExtra("identification", 1);
+            schedule_name_edittext.setFocusable(false);
             Cursor cursor = mydb.getIndividualData(id);
             cursor.moveToFirst();
 
@@ -182,6 +186,9 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                 sunday_from.setText(timings[0]);
                 sunday_to.setText(timings[1]);
             }
+        }
+        else{
+            schedule_name_edittext.requestFocus();
         }
 
     }
