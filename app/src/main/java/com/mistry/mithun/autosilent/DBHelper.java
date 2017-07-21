@@ -28,6 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String SCHEDULES_COLUMN_SATURDAY = "saturday";
     public static final String SCHEDULES_COLUMN_SUNDAY = "sunday";
     public static final String SCHEDULES_COLUMN_ACTIVE = "active";
+    public static final String SCHEDULES_COLUMN_ALARMCODES = "alarmcodes";
 
     public DBHelper(Context context) {
         super(context, DATABASE_NAME , null, 1);
@@ -38,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table schedules " +
-                        "(id integer primary key, schedule_name text not null,monday text,tuesday text, wednesday text,thursday text,friday text,saturday text,sunday text, active boolean not null)"
+                        "(id integer primary key, schedule_name text not null,monday text,tuesday text, wednesday text,thursday text,friday text,saturday text,sunday text, active boolean not null, alarmcodes text not null)"
         );
     }
 
@@ -49,7 +50,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean insertSchedule (String schedule_name, String monday, String tuesday, String wednesday,String thursday, String friday, String saturday, String sunday, Boolean active) {
+    public boolean insertSchedule (String schedule_name, String monday, String tuesday, String wednesday,String thursday, String friday, String saturday, String sunday, Boolean active, String alarmcodes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("schedule_name", schedule_name);
@@ -61,6 +62,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("saturday", saturday);
         contentValues.put("sunday", sunday);
         contentValues.put("active", active);
+        contentValues.put("alarmcodes", alarmcodes);
         db.insert("schedules", null, contentValues);
         return true;
     }
@@ -74,7 +76,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public boolean scheduleNameChecker(String schedule_name){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from schedules where schedule_name = ?", new String[]{schedule_name}, null );
+        Cursor res =  db.rawQuery( "select schedule_name from schedules where schedule_name = ?", new String[]{schedule_name}, null );
         return (res.getCount() == 0);
     }
 
@@ -84,7 +86,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return numRows;
     }
 
-    public boolean updateSchedule (Integer id, String schedule_name, String monday, String tuesday, String wednesday,String thursday, String friday, String saturday, String sunday, Boolean active) {
+    public boolean updateSchedule (Integer id, String schedule_name, String monday, String tuesday, String wednesday,String thursday, String friday, String saturday, String sunday, Boolean active, String alarmcodes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("schedule_name", schedule_name);
@@ -96,6 +98,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put("saturday", saturday);
         contentValues.put("sunday", sunday);
         contentValues.put("active", active);
+        contentValues.put("alarmcodes", alarmcodes);
         db.update("schedules", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
         return true;
     }
