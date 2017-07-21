@@ -47,7 +47,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
     EditText sunday_from, sunday_to;
     Button activation_button;
     EditText schedule_name_edittext;
-    Integer id = 0;
+    Integer id = 1;
     Boolean mainview = true;
     String pre_existing_alarm_codes = "";
     Boolean previous_active_status = true;
@@ -215,7 +215,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
 
-                String time = selectedHour + ":" + selectedMinute;
+                String time = String.format("%02d:%02d", selectedHour, selectedMinute);
                 switch (v.getId()) {
 
                     case R.id.monday_from:
@@ -340,38 +340,6 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         startActivity(intent);
     }
 
-    public boolean check_from_to(String from, String to){
-        String pattern = "^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$";
-        if((from != null && !from.isEmpty()) && (to != null && !to.isEmpty())){
-            Pattern time = Pattern.compile(pattern);
-            Matcher matcher_from = time.matcher(from);
-            Matcher matcher_to = time.matcher(to);
-            // check through regex whether we are getting correct inputs
-            if(matcher_from.find() && matcher_to.find()){
-                DateFormat sdf = new SimpleDateFormat("hh:mm");
-                try {
-                    Date time_from = sdf.parse(from);
-                    Date time_to = sdf.parse(to);
-                    if(time_from.before(time_to)){
-                        return true;
-                    }
-                    else{
-                        Toast.makeText(this, "From time cannot be greater than To time.", Toast.LENGTH_SHORT).show();
-                        return false;
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            else{
-                Toast.makeText(this, "Please select proper time", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        }
-        Toast.makeText(this, "From or To time cannot be null for selected day.", Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public String scheduler(String[] time_to_set_from, String[] time_to_set_to, String day, int last_db_id){
@@ -455,68 +423,73 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             String saturday_db = null;
             String sunday_db = null;
 
+            Validation validation = new Validation(this);
+
             if (monday.isChecked()) {
-                time_check = check_from_to(monday_from.getText().toString(), monday_to.getText().toString());
+                time_check = validation.check_from_to(monday_from.getText().toString(), monday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 monday_db = monday_from.getText().toString().trim() + " " + monday_to.getText().toString().trim();
             }
             if (tuesday.isChecked()) {
-                time_check = check_from_to(tuesday_from.getText().toString(), tuesday_to.getText().toString());
+                time_check = validation.check_from_to(tuesday_from.getText().toString(), tuesday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 tuesday_db = tuesday_from.getText().toString().trim() + " " + tuesday_to.getText().toString().trim();
             }
             if (wednesday.isChecked()) {
-                time_check = check_from_to(wednesday_from.getText().toString(), wednesday_to.getText().toString());
+                time_check = validation.check_from_to(wednesday_from.getText().toString(), wednesday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 wednesday_db = wednesday_from.getText().toString().trim() + " " + wednesday_to.getText().toString().trim();
             }
             if (thursday.isChecked()) {
-                time_check = check_from_to(thursday_from.getText().toString(), thursday_to.getText().toString());
+                time_check = validation.check_from_to(thursday_from.getText().toString(), thursday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 thursday_db = thursday_from.getText().toString().trim() + " " + thursday_to.getText().toString().trim();
             }
             if (friday.isChecked()) {
-                time_check = check_from_to(friday_from.getText().toString(), friday_to.getText().toString());
+                time_check = validation.check_from_to(friday_from.getText().toString(), friday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 friday_db = friday_from.getText().toString().trim() + " " + friday_to.getText().toString().trim();
             }
             if (saturday.isChecked()) {
-                time_check = check_from_to(saturday_from.getText().toString(), saturday_to.getText().toString());
+                time_check = validation.check_from_to(saturday_from.getText().toString(), saturday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 saturday_db = saturday_from.getText().toString().trim() + " " + saturday_to.getText().toString().trim();
             }
             if (sunday.isChecked()) {
-                time_check = check_from_to(sunday_from.getText().toString(), sunday_to.getText().toString());
+                time_check = validation.check_from_to(sunday_from.getText().toString(), sunday_to.getText().toString());
                 if (!time_check) {
                     return;
                 }
                 sunday_db = sunday_from.getText().toString().trim() + " " + sunday_to.getText().toString().trim();
             }
 
+            String alarm_codes = "";
 
-
+            if(mainview || (!mainview && (active != previous_active_status) && active)){
             // All checks passed, insert the data
-            if(mainview) {
-                String alarm_codes = "";
 
                 SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
 
-                int last_db_id = sharedPref.getInt("id", 1);
+                int last_db_id = id;
 
-                if(active) {
+                if(mainview){
+                    last_db_id = sharedPref.getInt("id", 1);
+                }
+
+                if (active) {
 
                     if (monday_db != null && !monday_db.isEmpty()) {
 
@@ -559,13 +532,22 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                         String request_codes = scheduler(sunday_from.getText().toString().split(":"), sunday_to.getText().toString().split(":"), getString(R.string.sunday_code), last_db_id);
                         alarm_codes += request_codes;
                     }
-                }
+
+                if(mainview) {
 
                     mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
                     Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
                     editor.putInt("id", last_db_id + 1);
                     editor.apply();
                     startActivity(intent);
+                }
+                else{
+                    mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
+                    Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(this, ViewScheduleActivity.class);
+                    startActivity(intent);
+                }
+                }
             } else {
                 if (active != previous_active_status){
                     // status changed
@@ -577,7 +559,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                         }
                     }
                 }
-                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, "");
+                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, pre_existing_alarm_codes.trim());
                 Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, ViewScheduleActivity.class);
                 startActivity(intent);

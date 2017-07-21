@@ -51,18 +51,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/set_schedule"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="5dp"
                 android:background="@android:color/transparent"
                 android:onClick="view_schedule"
                 android:text="View Schedules"
+                android:textColor="@android:color/holo_blue_dark"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_alignLeft="@+id/onetime_schedule"
+                android:layout_alignStart="@+id/onetime_schedule"
+                android:layout_alignRight="@+id/onetime_schedule"
+                android:layout_alignEnd="@+id/onetime_schedule" />
+
+            <Button
+                android:id="@+id/onetime_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/view_schedule"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:onClick="one_time_activity"
+                android:text="One Time Scheduler"
                 android:textColor="@android:color/holo_blue_dark" />
 
             <Button
                 android:id="@+id/test"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/view_schedule"
+                android:layout_below="@+id/onetime_schedule"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="5dp"
                 android:background="@android:color/transparent"
