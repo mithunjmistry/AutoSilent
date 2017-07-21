@@ -1,5 +1,6 @@
 package com.mistry.mithun.autosilent;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -9,12 +10,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,6 +29,7 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -45,8 +49,11 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
     EditText schedule_name_edittext;
     Integer id = 0;
     Boolean mainview = true;
+    String pre_existing_alarm_codes = "";
+    Boolean previous_active_status = true;
 
     private DBHelper mydb;
+    private AlarmManager alarmMgr;
 
     CheckBox monday, tuesday, wednesday, thursday, friday, saturday, sunday;
 
@@ -60,6 +67,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
 
         schedule_name_edittext = (EditText)findViewById(R.id.schedule_name);
         mydb = new DBHelper(this);
+        alarmMgr = (AlarmManager)getApplicationContext().getSystemService(Context.ALARM_SERVICE);
 
         activation_button = (Button)findViewById(R.id.activation_button);
         activation_button.setTextColor(Color.GREEN);
@@ -122,6 +130,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             String friday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_FRIDAY));
             String saturday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_SATURDAY));
             String sunday_preset = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_SUNDAY));
+            pre_existing_alarm_codes = cursor.getString(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_ALARMCODES));
             int active_preset = cursor.getInt(cursor.getColumnIndex(DBHelper.SCHEDULES_COLUMN_ACTIVE));
 
             if (!cursor.isClosed())  {
@@ -136,6 +145,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             if(active_preset == 0){
                 activation_button.setText("Deactivated");
                 activation_button.setTextColor(Color.RED);
+                previous_active_status = false;
             }
 
             if(monday_preset != null && !monday_preset.isEmpty()){
@@ -146,42 +156,42 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             }
 
             if(tuesday_preset != null && !tuesday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = tuesday_preset.split(" ");
                 tuesday.setChecked(true);
                 tuesday_from.setText(timings[0]);
                 tuesday_to.setText(timings[1]);
             }
 
             if(wednesday_preset != null && !wednesday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = wednesday_preset.split(" ");
                 wednesday.setChecked(true);
                 wednesday_from.setText(timings[0]);
                 wednesday_to.setText(timings[1]);
             }
 
             if(thursday_preset != null && !thursday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = thursday_preset.split(" ");
                 thursday.setChecked(true);
                 thursday_from.setText(timings[0]);
                 thursday_to.setText(timings[1]);
             }
 
             if(friday_preset != null && !friday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = friday_preset.split(" ");
                 friday.setChecked(true);
                 friday_from.setText(timings[0]);
                 friday_to.setText(timings[1]);
             }
 
             if(saturday_preset != null && !saturday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = saturday_preset.split(" ");
                 saturday.setChecked(true);
                 saturday_from.setText(timings[0]);
                 saturday_to.setText(timings[1]);
             }
 
             if(sunday_preset != null && !sunday_preset.isEmpty()){
-                String[] timings = monday_preset.split(" ");
+                String[] timings = sunday_preset.split(" ");
                 sunday.setChecked(true);
                 sunday_from.setText(timings[0]);
                 sunday_to.setText(timings[1]);
@@ -362,6 +372,59 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         return false;
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public String scheduler(String[] time_to_set_from, String[] time_to_set_to, String day, int last_db_id){
+
+        String to_return = "";
+        PendingIntent alarmIntent;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        Intent pintent = new Intent(getApplicationContext(), VibrateReceiver.class);
+        Intent pintent_ring = new Intent(getApplicationContext(), RingReceiver.class);
+
+        ArrayList<Integer> request_code = requestCodeMaker(last_db_id, day, getString(R.string.vibrate_mode));
+
+        calendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time_to_set_from[0]));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(time_to_set_from[1]));
+        calendar.set(Calendar.SECOND, 1);
+
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), request_code.get(0), pintent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+        calendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time_to_set_to[0]));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(time_to_set_to[1]));
+        calendar.set(Calendar.SECOND, 1);
+
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), request_code.get(1), pintent_ring, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+
+        to_return = String.valueOf(request_code.get(0)) + " " + String.valueOf(request_code.get(1)) + " ";
+        return to_return;
+    }
+
+    public void schedulerDeactivate(String req_code){
+        int request_code = Integer.parseInt(req_code);
+        PendingIntent alarmIntent;
+        Intent pintent = new Intent(getApplicationContext(), VibrateReceiver.class);
+        Intent pintent_ring = new Intent(getApplicationContext(), RingReceiver.class);
+
+        if(Character.toString(req_code.trim().charAt(2)).equals(getString(R.string.vibrate_mode))){
+            Log.d("Came in if", "deactivate if");
+            alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), request_code, pintent, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmMgr.cancel(alarmIntent);
+        }
+        else if(Character.toString(req_code.trim().charAt(2)).equals(getString(R.string.ringer_mode))){
+            Log.d("Came in else", "deactivate else");
+            alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), request_code, pintent_ring, PendingIntent.FLAG_UPDATE_CURRENT);
+            alarmMgr.cancel(alarmIntent);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void save(View view) {
         Boolean time_check;
@@ -442,13 +505,79 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                 sunday_db = sunday_from.getText().toString().trim() + " " + sunday_to.getText().toString().trim();
             }
 
+
+
             // All checks passed, insert the data
             if(mainview) {
-                mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
-                Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
-                startActivity(intent);
+                String alarm_codes = "";
+
+                SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+
+                int last_db_id = sharedPref.getInt("id", 1);
+
+                if(active) {
+
+                    if (monday_db != null && !monday_db.isEmpty()) {
+
+                        String request_codes = scheduler(monday_from.getText().toString().split(":"), monday_to.getText().toString().split(":"), getString(R.string.monday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (tuesday_db != null && !tuesday_db.isEmpty()) {
+
+                        String request_codes = scheduler(tuesday_from.getText().toString().split(":"), tuesday_to.getText().toString().split(":"), getString(R.string.tuesday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (wednesday_db != null && !wednesday_db.isEmpty()) {
+
+                        String request_codes = scheduler(wednesday_from.getText().toString().split(":"), wednesday_to.getText().toString().split(":"), getString(R.string.wednesday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (thursday_db != null && !thursday_db.isEmpty()) {
+
+                        String request_codes = scheduler(thursday_from.getText().toString().split(":"), thursday_to.getText().toString().split(":"), getString(R.string.thursday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (friday_db != null && !friday_db.isEmpty()) {
+
+                        String request_codes = scheduler(friday_from.getText().toString().split(":"), friday_to.getText().toString().split(":"), getString(R.string.friday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (saturday_db != null && !saturday_db.isEmpty()) {
+
+                        String request_codes = scheduler(saturday_from.getText().toString().split(":"), saturday_to.getText().toString().split(":"), getString(R.string.saturday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+
+                    if (sunday_db != null && !sunday_db.isEmpty()) {
+
+                        String request_codes = scheduler(sunday_from.getText().toString().split(":"), sunday_to.getText().toString().split(":"), getString(R.string.sunday_code), last_db_id);
+                        alarm_codes += request_codes;
+                    }
+                }
+
+                    mydb.insertSchedule(schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
+                    Toast.makeText(this, "Saved.", Toast.LENGTH_SHORT).show();
+                    editor.putInt("id", last_db_id + 1);
+                    editor.apply();
+                    startActivity(intent);
             } else {
-                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active);
+                if (active != previous_active_status){
+                    // status changed
+                    if(!active) {
+                        // deactivated now
+                        String[] pre_existing_alarm_codes_array = pre_existing_alarm_codes.split(" ");
+                        for (String acode_data : pre_existing_alarm_codes_array) {
+                            schedulerDeactivate(acode_data);
+                        }
+                    }
+                }
+                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, "");
                 Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
                 intent = new Intent(this, ViewScheduleActivity.class);
                 startActivity(intent);
@@ -457,6 +586,17 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         } else {
             Toast.makeText(this, "Please name your schedule.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private ArrayList<Integer> requestCodeMaker(int last_db_id, String day, String mode) {
+        ArrayList<Integer> to_return = new ArrayList<>();
+        int code_from = 0;
+        int code_to = 0;
+        code_from = Integer.parseInt(String.valueOf(last_db_id) + day + mode);
+        code_to = Integer.parseInt(String.valueOf(last_db_id) + day + getString(R.string.ringer_mode));
+        to_return.add(0, code_from);
+        to_return.add(1, code_to);
+        return to_return;
     }
 
 

@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Auto Silent</string>
+    <string name="sunday_code">1</string>
+    <string name="monday_code">2</string>
+    <string name="tuesday_code">3</string>
+    <string name="wednesday_code">4</string>
+    <string name="thursday_code">5</string>
+    <string name="friday_code">6</string>
+    <string name="saturday_code">7</string>
+    <string name="silent_mode">0</string>
+    <string name="vibrate_mode">1</string>
+    <string name="ringer_mode">2</string>
 </resources>

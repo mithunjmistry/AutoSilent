@@ -62,13 +62,25 @@ public class TestActivity extends AppCompatActivity{
             default:
                 break;
         }
-        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
+        // calendar.set(Calendar.DAY_OF_WEEK, 6);
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hours.getText().toString()));
         calendar.set(Calendar.MINUTE, Integer.parseInt(minutes.getText().toString()));
+        calendar.set(Calendar.SECOND, 1);
         alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
         Intent main = new Intent(this, MainActivity.class);
         startActivity(main);
+    }
+
+    public void cancel_mode(View v){
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getApplicationContext(), VibrateReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.cancel(alarmIntent);
+        Intent main = new Intent(this, MainActivity.class);
+        startActivity(main);
+
     }
 }

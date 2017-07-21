@@ -77,5 +77,19 @@
                 android:text="Ringer" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:onClick="cancel_mode"
+                android:text="Cancel" />
+        </RelativeLayout>
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
