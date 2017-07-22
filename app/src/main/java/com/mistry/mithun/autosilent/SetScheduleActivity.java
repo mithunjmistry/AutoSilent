@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
@@ -30,8 +31,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +54,9 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
     Boolean mainview = true;
     String pre_existing_alarm_codes = "";
     Boolean previous_active_status = true;
+
+    Boolean monday_change = false, tuesday_change = false, wednesday_change = false, thursday_change = false
+            , friday_change = false, saturday_change = false, sunday_change = false;
 
     private DBHelper mydb;
     private AlarmManager alarmMgr;
@@ -116,6 +122,14 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         sunday_to.setOnClickListener(this);
 
         if(last_intent.equalsIgnoreCase("listview")){
+            monday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            tuesday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            wednesday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            thursday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            friday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            saturday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+            sunday.setOnCheckedChangeListener(new myCheckBoxChangelistener());
+
             mainview = false;
             id = intent.getIntExtra("identification", 1);
             schedule_name_edittext.setFocusable(false);
@@ -392,6 +406,29 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
+    private void changedSchedule(String new_alarm_codes){
+        String[] pre_existing_elements = pre_existing_alarm_codes.trim().split(" ");
+        String[] alarm_code_elements = new_alarm_codes.trim().split(" ");
+
+        List<String> pre_existing_list = Arrays.asList(pre_existing_elements);
+        List<String> new_codes_list = Arrays.asList(alarm_code_elements);
+
+        List<String> union = new ArrayList<>(Arrays.asList(pre_existing_elements));
+        union.addAll(new_codes_list);
+
+        List<String> intersection = new ArrayList<>(pre_existing_list);
+        intersection.retainAll(new_codes_list);
+
+        union.removeAll(intersection);
+        for (String n : union) {
+            if(pre_existing_list.contains(n)){
+                // pre-existing day is removed so need to cancel schedule for that day
+                schedulerDeactivate(n);
+            }
+            // else new day's alarm is already set.
+        }
+    }
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void save(View view) {
@@ -542,10 +579,16 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                     startActivity(intent);
                 }
                 else{
-                    mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
-                    Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
-                    intent = new Intent(this, ViewScheduleActivity.class);
-                    startActivity(intent);
+                    if(pre_existing_alarm_codes.equalsIgnoreCase(alarm_codes)){
+                        mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
+                        Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+                        intent = new Intent(this, ViewScheduleActivity.class);
+                        startActivity(intent);
+                    }
+                    if(monday_change || tuesday_change || wednesday_change || thursday_change
+                            || friday_change || saturday_change || sunday_change){
+                        changedSchedule(alarm_codes);
+                    }
                 }
                 }
             } else {
@@ -557,6 +600,10 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                         for (String acode_data : pre_existing_alarm_codes_array) {
                             schedulerDeactivate(acode_data);
                         }
+                        mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, "");
+                        Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+                        intent = new Intent(this, ViewScheduleActivity.class);
+                        startActivity(intent);
                     }
                 }
                 mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, pre_existing_alarm_codes.trim());
@@ -581,5 +628,39 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         return to_return;
     }
 
+    private class myCheckBoxChangelistener implements CheckBox.OnCheckedChangeListener{
+        int mon = 0, tue = 0, wed = 0, thurs = 0, fri = 0, sat = 0, sun = 0;
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(buttonView == monday){
+                monday_change = ( (mon & 1) == 0 ); // true on even
+                mon++;
+            }
+            if(buttonView == tuesday){
+                tuesday_change = ( (tue & 1) == 0 ); // true on even
+                tue++;
+            }
+            if(buttonView == wednesday){
+                wednesday_change = ( (wed & 1) == 0 ); // true on even
+                wed++;
+            }
+            if(buttonView == thursday){
+                thursday_change = ( (thurs & 1) == 0 ); // true on even
+                thurs++;
+            }
+            if(buttonView == friday){
+                friday_change = ( (fri & 1) == 0 ); // true on even
+                fri++;
+            }
+            if(buttonView == saturday){
+                saturday_change = ( (sat & 1) == 0 ); // true on even
+                sat++;
+            }
+            if(buttonView == sunday){
+                sunday_change = ( (sun & 1) == 0 ); // true on even
+                sun++;
+            }
+        }
+    }
 
 }
