@@ -316,6 +316,10 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                String[] pre_exisiting_code_array = pre_existing_alarm_codes.trim().split(" ");
+                for(String s : pre_exisiting_code_array){
+                    schedulerDeactivate(s);
+                }
                 mydb.deleteSchedule(id);
                 Intent intent = new Intent(getApplicationContext(), ViewScheduleActivity.class);
                 startActivity(intent);
@@ -363,10 +367,12 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        Intent pintent = new Intent(getApplicationContext(), VibrateReceiver.class);
-        Intent pintent_ring = new Intent(getApplicationContext(), RingReceiver.class);
-
         ArrayList<Integer> request_code = requestCodeMaker(last_db_id, day, getString(R.string.vibrate_mode));
+
+        Intent pintent = new Intent(getApplicationContext(), VibrateReceiver.class);
+        pintent.putExtra("request_code", request_code.get(0));
+        Intent pintent_ring = new Intent(getApplicationContext(), RingReceiver.class);
+        pintent_ring.putExtra("request_code", request_code.get(1));
 
         calendar.set(Calendar.DAY_OF_WEEK, Integer.parseInt(day));
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time_to_set_from[0]));
@@ -514,7 +520,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
 
             String alarm_codes = "";
 
-            if(mainview || (!mainview && (active != previous_active_status) && active)){
+            if(mainview || (!mainview && active)){
             // All checks passed, insert the data
 
                 SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
@@ -579,16 +585,18 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                     startActivity(intent);
                 }
                 else{
-                    if(pre_existing_alarm_codes.equalsIgnoreCase(alarm_codes)){
-                        mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
-                        Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
-                        intent = new Intent(this, ViewScheduleActivity.class);
-                        startActivity(intent);
-                    }
-                    if(monday_change || tuesday_change || wednesday_change || thursday_change
-                            || friday_change || saturday_change || sunday_change){
+                    if(!pre_existing_alarm_codes.equalsIgnoreCase(alarm_codes)){
+                        Log.d("pre existing change", "pre change");
                         changedSchedule(alarm_codes);
                     }
+                    mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, alarm_codes.trim());
+                    Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+                    intent = new Intent(this, ViewScheduleActivity.class);
+                    startActivity(intent);
+//                    if(monday_change || tuesday_change || wednesday_change || thursday_change
+//                            || friday_change || saturday_change || sunday_change){
+//                        changedSchedule(alarm_codes);
+//                    }
                 }
                 }
             } else {
@@ -606,10 +614,10 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
                         startActivity(intent);
                     }
                 }
-                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, pre_existing_alarm_codes.trim());
-                Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
-                intent = new Intent(this, ViewScheduleActivity.class);
-                startActivity(intent);
+//                mydb.updateSchedule(id, schedule_name, monday_db, tuesday_db, wednesday_db, thursday_db, friday_db, saturday_db, sunday_db, active, pre_existing_alarm_codes.trim());
+//                Toast.makeText(this, "Updated.", Toast.LENGTH_SHORT).show();
+//                intent = new Intent(this, ViewScheduleActivity.class);
+//                startActivity(intent);
             }
 
         } else {
