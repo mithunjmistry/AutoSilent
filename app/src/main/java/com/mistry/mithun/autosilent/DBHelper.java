@@ -125,6 +125,21 @@ public class DBHelper extends SQLiteOpenHelper {
         return array_list;
     }
 
+    public ArrayList<String> getAllAlarmCodes() {
+        ArrayList<String> array_list = new ArrayList<>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res =  db.rawQuery( "select alarmcodes from schedules", null );
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            array_list.add(res.getString(res.getColumnIndex(SCHEDULES_COLUMN_ALARMCODES)));
+            res.moveToNext();
+        }
+        res.close();
+        return array_list;
+    }
+
     public ArrayList<Integer> getAllId() {
         ArrayList<Integer> array_list = new ArrayList<>();
 
