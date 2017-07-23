@@ -6,6 +6,10 @@
     android:layout_height="match_parent"
     tools:context="com.mistry.mithun.autosilent.OneTimeActivity">
 
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
     <LinearLayout
         android:layout_width="368dp"
         android:layout_height="495dp"
@@ -77,6 +81,32 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/oneTimeDateTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Date"
+                android:textSize="18sp"
+                android:layout_weight="0.05" />
+
+            <EditText
+                android:id="@+id/oneTimeDate"
+                android:layout_width="147dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:ems="10"
+                android:inputType="date"
+                android:onClick="setDate"
+                android:focusable="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
@@ -126,6 +156,20 @@
                 android:onClick="set"
                 android:text="Set"
                 android:textColor="@android:color/holo_blue_dark" />
+
+            <Button
+                android:id="@+id/cancelOneTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/set"
+                android:layout_alignStart="@+id/set"
+                android:layout_below="@+id/set"
+                android:background="@android:color/transparent"
+                android:onClick="cancelOneTime"
+                android:text="Cancel"
+                android:textColor="@android:color/holo_blue_dark"
+                android:visibility="gone" />
         </RelativeLayout>
     </LinearLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>
