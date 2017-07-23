@@ -84,7 +84,8 @@
                 android:background="@android:color/transparent"
                 android:onClick="test"
                 android:text="Test"
-                android:textColor="@android:color/holo_blue_dark" />
+                android:textColor="@android:color/holo_blue_dark"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
