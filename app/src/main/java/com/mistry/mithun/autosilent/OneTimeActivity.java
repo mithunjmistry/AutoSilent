@@ -237,8 +237,10 @@ public class OneTimeActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         if((day >= calendar.get(Calendar.DAY_OF_MONTH)) && (month >= (calendar.get(Calendar.MONTH))) && (year >= calendar.get(Calendar.YEAR))) {
 
-        Validation validation = new Validation(getApplicationContext());
+        ValidationKotlin validation = new ValidationKotlin(getApplicationContext());
         Boolean validation_status = validation.check_from_to(from.getText().toString(), to.getText().toString());
+//        Validation validation = new Validation(getApplicationContext());
+//        Boolean validation_status = validation.check_from_to(from.getText().toString(), to.getText().toString());
         if(validation_status) {
             String[] from_parameters = from.getText().toString().split(":");
             String[] to_parameters = to.getText().toString().split(":");
@@ -248,6 +250,7 @@ public class OneTimeActivity extends AppCompatActivity {
             alarmIntent = PendingIntent.getBroadcast(getApplicationContext(), 10, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             calendar.setTimeInMillis(System.currentTimeMillis());
             // calendar.set(Calendar.DAY_OF_WEEK, 6);
+            calendar.set(year, month, day);
             calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(from_parameters[0]));
             calendar.set(Calendar.MINUTE, Integer.parseInt(from_parameters[1]));
             calendar.set(Calendar.SECOND, 1);

@@ -10,4 +10,20 @@
     <string name="silent_mode">0</string>
     <string name="vibrate_mode">1</string>
     <string name="ringer_mode">2</string>
+    <string name="setScheduleHelpContent">Select the days you want recurring alarms via checkbox.
+    From time is the time when phone should activate vibrate mode, To time is the time when the phone will
+    be back to Normal mode.</string>
+    <string name="viewScheduleHelpContent">Here you can view your saved schedules. Select the schedule
+        and you can explore more options like deactivating, modifying or deleting that schedule.</string>
+    <string name="oneTimeHelpContent">Here you can set a non-recurring one time only schedule easily and conveniently. In one time schedule,
+        you can choose the mode i.e. Silent or vibrate. The phone will automatically activate your selected mode at the From time
+        and turn back to normal mode at To time. Currently the app
+    supports only Single one time schedule. More one-time schedules will be supported in future updates.</string>
+    <string name="oneTimeHelpCancel">To cancel, again select one time schedule and you can see your preset one time details are available there.
+    Also, there is an extra cancel button if you have a one time non-recurring schedule set. Just press the cancel button to cancel your
+     one time schedule.</string>
+    <string name="helpFeedback">Report bug or provide feedback? Reach me at mithunjmistry@gmail.com. Constructive feedbacks and ideas are
+    always appreciated.</string>
+    <string name="setRestartContent">We know that you restart your phone to optimize it and make it run better. So, the app will
+    deactivate all your schedules automatically for you. You can simply open your schedule and activate it again.</string>
 </resources>
