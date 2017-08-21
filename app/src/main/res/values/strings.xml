@@ -26,4 +26,9 @@
     always appreciated.</string>
     <string name="setRestartContent">We know that you restart your phone to optimize it and make it run better. So, the app will
     deactivate all your schedules automatically for you. You can simply open your schedule and activate it again.</string>
+    <string name="wifisilenttitle">Phone will be automatically switched to vibrate mode on Work WiFi and Ringer mode on Home WiFi.</string>
+    <string-array name="mode">
+        <item>Vibrate</item>
+        <item>Silent</item>
+    </string-array>
 </resources>

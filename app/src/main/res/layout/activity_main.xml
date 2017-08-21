@@ -75,10 +75,22 @@
                 android:textColor="@android:color/holo_blue_dark" />
 
             <Button
-                android:id="@+id/help"
+                android:id="@+id/wifisilent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/onetime_schedule"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"
+                android:onClick="wifisilent"
+                android:text="Wifi Silent"
+                android:textColor="@android:color/holo_blue_dark" />
+
+            <Button
+                android:id="@+id/help"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/wifisilent"
                 android:layout_centerHorizontal="true"
                 android:layout_margin="5dp"
                 android:background="@android:color/transparent"
