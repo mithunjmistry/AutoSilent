@@ -17,22 +17,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SetScheduleActivity" />
-        <activity android:name=".ViewScheduleActivity" />
+        <activity android:name=".SetScheduleActivity" android:screenOrientation="portrait" />
+        <activity android:name=".ViewScheduleActivity" android:screenOrientation="portrait" />
 
         <receiver android:name=".ModeReceiver" />
         <receiver android:name=".RingReceiver" />
         <receiver android:name=".VibrateReceiver" />
 
-        <activity android:name=".TestActivity" />
-        <activity android:name=".OneTimeActivity" />
+        <activity android:name=".TestActivity" android:screenOrientation="portrait" />
+        <activity android:name=".OneTimeActivity" android:screenOrientation="portrait" />
 
         <receiver android:name=".DeviceBootReceiver">
             <intent-filter>
@@ -48,8 +49,8 @@
         </intent-filter>
         </receiver>
 
-        <activity android:name=".HelpActivity" />
-        <activity android:name=".WifiSilentActivity"></activity>
+        <activity android:name=".HelpActivity" android:screenOrientation="portrait" />
+        <activity android:name=".WifiSilentActivity" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

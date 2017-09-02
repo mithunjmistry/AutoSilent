@@ -58,6 +58,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:text="Mode"
+            android:visibility="gone"
             tools:textColor="@android:color/black" />
 
         <Spinner
@@ -66,7 +67,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:entries="@array/mode"/>
+            android:entries="@array/mode"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/activation_button_wifi"

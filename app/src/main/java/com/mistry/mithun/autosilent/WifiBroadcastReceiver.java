@@ -50,7 +50,7 @@ public class WifiBroadcastReceiver extends BroadcastReceiver {
                             if(mode.equalsIgnoreCase("vibrate")){
                                 am.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
                             }
-                            else{
+                            else {
                                 am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                             }
                         }
