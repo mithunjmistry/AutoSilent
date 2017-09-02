@@ -39,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // TODO Auto-generated method stub
         db.execSQL(
                 "create table schedules " +
-                        "(id integer primary key, schedule_name text not null,monday text,tuesday text, wednesday text,thursday text,friday text,saturday text,sunday text, active boolean not null, alarmcodes text not null)"
+                        "(id integer primary key, schedule_name text not null,monday text,tuesday text, wednesday text,thursday text,friday text,saturday text,sunday text, active boolean not null, alarmcodes text)"
         );
     }
 
@@ -153,5 +153,10 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         res.close();
         return array_list;
+    }
+
+    public void restartDeactivation(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.execSQL("UPDATE schedules SET alarmcodes = NULL, active = 0");
     }
 }

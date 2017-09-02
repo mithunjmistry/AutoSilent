@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mistry.mithun.autosilent.HelpActivity">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/helpTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="How to use the app?"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/helpSetScheduleTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="1. Set Schedule"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/helpSetScheduleC1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/setScheduleHelpContent"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/helpViewScheduletitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="2. View Schedule"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/helpViewScheduleC1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/viewScheduleHelpContent"
+                android:textColor="@android:color/holo_red_dark" />
+
+            <TextView
+                android:id="@+id/helpOTTile"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="3. One time schedule"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/helpOTC1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/oneTimeHelpContent"
+                android:textColor="@android:color/holo_green_dark" />
+
+            <TextView
+                android:id="@+id/helpOTCancelTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="4. How to cancel one time schedule?"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/helpOTCancelC1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/oneTimeHelpCancel"
+                android:textColor="@android:color/holo_purple" />
+
+            <TextView
+                android:id="@+id/helpRestartTitleTV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="5. What happens when my phone restarts?"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/helpRestartC1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/setRestartContent"
+                android:textColor="@color/colorPrimary" />
+
+            <TextView
+                android:id="@+id/helpFeedback"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="@string/helpFeedback"
+                android:textColor="@android:color/black"
+                android:textIsSelectable="true"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

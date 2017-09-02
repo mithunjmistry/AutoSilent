@@ -25,6 +25,8 @@ public class TestActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
+
+
         hours = (EditText)findViewById(R.id.hour);
         minutes = (EditText)findViewById(R.id.minute);
     }

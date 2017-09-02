@@ -5,7 +5,10 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -14,28 +17,40 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SetScheduleActivity" />
-        <activity android:name=".ViewScheduleActivity" />
+        <activity android:name=".SetScheduleActivity" android:screenOrientation="portrait" />
+        <activity android:name=".ViewScheduleActivity" android:screenOrientation="portrait" />
 
         <receiver android:name=".ModeReceiver" />
         <receiver android:name=".RingReceiver" />
         <receiver android:name=".VibrateReceiver" />
 
-        <activity android:name=".TestActivity" />
-        <activity android:name=".OneTimeActivity"></activity>
+        <activity android:name=".TestActivity" android:screenOrientation="portrait" />
+        <activity android:name=".OneTimeActivity" android:screenOrientation="portrait" />
 
         <receiver android:name=".DeviceBootReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".WifiBroadcastReceiver">
+        <intent-filter>
+            <!--<action android:name="android.net.conn.CONNECTIVITY_CHANGE" />-->
+            <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            <action android:name="android.net.wifi.STATE_CHANGE" />
+        </intent-filter>
+        </receiver>
+
+        <activity android:name=".HelpActivity" android:screenOrientation="portrait" />
+        <activity android:name=".WifiSilentActivity" android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

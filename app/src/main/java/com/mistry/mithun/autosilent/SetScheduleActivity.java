@@ -466,7 +466,7 @@ public class SetScheduleActivity extends AppCompatActivity implements View.OnCli
             String saturday_db = null;
             String sunday_db = null;
 
-            Validation validation = new Validation(this);
+            ValidationKotlin validation = new ValidationKotlin(this);
 
             if (monday.isChecked()) {
                 time_check = validation.check_from_to(monday_from.getText().toString(), monday_to.getText().toString());
